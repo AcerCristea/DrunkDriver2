@@ -20,6 +20,10 @@ public class StateManager : MonoBehaviour
     public float fogIncreaseRate = 0.01f;   // Increase rate per beer
     public Color fogColor = new Color(1f, 0.65f, 0.2f); // Yellowish-orange fog color
 
+    public ParticleSystem fogParticleSystem;
+
+
+
     void Start()
     {
         // Initialize UI
@@ -46,6 +50,11 @@ public class StateManager : MonoBehaviour
         // Adjust fog density dynamically
         float targetDensity = initialFogDensity + (BeersDrunk * fogIncreaseRate);
         RenderSettings.fogDensity = Mathf.Clamp(targetDensity, initialFogDensity, maxFogDensity);
+        if (fogParticleSystem != null)
+        {
+            var emission = fogParticleSystem.emission; // Access emission module
+            emission.rateOverTimeMultiplier +=5;  // Multiply emission rate by 1.5
+        }
     }
 
     public void LoseLife()
