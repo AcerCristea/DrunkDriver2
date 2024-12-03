@@ -30,8 +30,12 @@ public class CarController : MonoBehaviour
         float steeringSpeed = baseSteeringSpeed + (drunknessFactor * 0.5f);
 
         // Forward movement
-        transform.position += transform.forward * Time.deltaTime * carSpeed;
 
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            transform.position += transform.forward * Time.deltaTime * carSpeed;
+        }
 
         // Steering with uncontrollable swerve
         float swerveAmount = swerve * Time.deltaTime * 50f;
