@@ -64,7 +64,7 @@ private void SpawnObstacles(GameObject road)
         float spawnPosZ = road.transform.position.z + Random.Range(-obstacleSpawnRangeY, obstacleSpawnRangeY);
 
         // Position the obstacle
-        Vector3 obstaclePosition = new Vector3(spawnPosX, 7.0f, spawnPosZ);
+        Vector3 obstaclePosition = new Vector3(spawnPosX, 7.5f, spawnPosZ);
 
         // Instantiate the obstacle as a child of the road
         GameObject obstacle = Instantiate(
@@ -74,8 +74,13 @@ private void SpawnObstacles(GameObject road)
             road.transform // Make this obstacle a child of the road
         );
 
+        //set obstacle Tag
+        obstacle.tag = "Obstacle";
+
         // Scale the obstacle to match the player's car size
-        obstacle.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        obstacle.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+
+        SetRandomColorRecursive(obstacle.transform); // Randomize the color of the obstacle
 
         // Randomize the color of the obstacle
         Renderer renderer = obstacle.GetComponent<Renderer>();
@@ -85,7 +90,7 @@ private void SpawnObstacles(GameObject road)
         }
 
         // Destroy the obstacle after 5 seconds
-        Destroy(obstacle, 4f);
+        Destroy(obstacle, 3.5f);
     }
 }
 private void ClearObstacles(GameObject road)

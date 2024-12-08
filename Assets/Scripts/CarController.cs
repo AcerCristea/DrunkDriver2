@@ -63,10 +63,24 @@ public class CarController : MonoBehaviour
     }
 
     // Helper function to normalize angles to the range [0, 360)
+
+
+
     private float NormalizeAngle(float angle)
     {
         while (angle < 0) angle += 360;
         while (angle >= 360) angle -= 360;
         return angle;
+        
+    }
+
+    //if the car collides with the obstacle, the player loses a life
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Obstacle"))
+        {
+            Debug.Log("Collision with obstacle!");  
+            stateManager.LoseLife();
+        }
     }
 }
