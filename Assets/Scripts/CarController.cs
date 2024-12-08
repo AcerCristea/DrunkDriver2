@@ -32,7 +32,7 @@ public class CarController : MonoBehaviour
         float swerve = (Mathf.PerlinNoise(Time.time * drunknessFactor, 0.0f) - 0.5f) * drunknessFactor;
 
         // Clamp the swerve angle
-        currentSwerveAngle = Mathf.Clamp(swerve * Time.deltaTime * 50f, -1.0f, 1.0f); // Keep swerve subtle
+        currentSwerveAngle = Mathf.Clamp(swerve * Time.deltaTime * 50f, -drunknessFactor, drunknessFactor); // Keep swerve subtle
 
         // Calculate steering input
         float steeringSpeed = baseSteeringSpeed + (drunknessFactor * 0.5f);
@@ -40,11 +40,11 @@ public class CarController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.A))
         {
-            steeringInput = -steeringSpeed * Time.deltaTime * 70f;
+            steeringInput = -steeringSpeed * Time.deltaTime * 90f;
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            steeringInput = steeringSpeed * Time.deltaTime * 70f;
+            steeringInput = steeringSpeed * Time.deltaTime * 90f;
         }
 
         // Combine swerve and steering input
@@ -58,10 +58,8 @@ public class CarController : MonoBehaviour
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, clampedRotation, transform.rotation.eulerAngles.z);
 
         // Forward movement
-        if (Input.GetKey(KeyCode.W))
-        {
-            transform.Translate(-Vector3.right * Time.deltaTime * carSpeed);
-        }
+        transform.Translate(-Vector3.right * Time.deltaTime * carSpeed);
+
     }
 
     // Helper function to normalize angles to the range [0, 360)
