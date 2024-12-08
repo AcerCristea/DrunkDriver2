@@ -1,13 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    private int carSpeed = 10;
+    private float carSpeed = 10f;
     private float baseSteeringSpeed = 0.5f;
     public StateManager stateManager;
+
+    public float minRotation = 181.957f; // Minimum allowed Y rotation (A key limit)
+    public float maxRotation = 188.616f; // Maximum allowed Y rotation (D key limit)
+
+    private float currentSwerveAngle = 0.0f; // Tracks current swerve angle
 
     void Start()
     {
@@ -17,44 +19,56 @@ public class CarController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
+        if (stateManager == null) return;
+
         int beersDrunk = stateManager.BeersDrunk;
 
+        // Drunkness increases random swerve
         float drunknessFactor = beersDrunk * 0.2f;
 
-        float swerve = Mathf.PerlinNoise(Time.time * drunknessFactor, 0.0f) - 0.5f;
-        swerve *= drunknessFactor;
+        // Perlin noise for smooth random motion (swerve)
+        float swerve = (Mathf.PerlinNoise(Time.time * drunknessFactor, 0.0f) - 0.5f) * drunknessFactor;
 
+        // Clamp the swerve angle
+        currentSwerveAngle = Mathf.Clamp(swerve * Time.deltaTime * 50f, -1.0f, 1.0f); // Keep swerve subtle
+
+        // Calculate steering input
         float steeringSpeed = baseSteeringSpeed + (drunknessFactor * 0.5f);
+        float steeringInput = 0.0f;
 
-        // Forward movement
-
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            transform.position += transform.forward * Time.deltaTime * carSpeed;
-        }
-
-        // Steering with uncontrollable swerve
-        float swerveAmount = swerve * Time.deltaTime * 50f;
-        transform.Rotate(Vector3.up, swerveAmount);
-
-        // Steering input
-        float steeringInput = 0f;
         if (Input.GetKey(KeyCode.A))
         {
-            steeringInput = -steeringSpeed * Time.deltaTime * 50f;
+            steeringInput = -steeringSpeed * Time.deltaTime * 70f;
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            steeringInput = steeringSpeed * Time.deltaTime * 50f;
+            steeringInput = steeringSpeed * Time.deltaTime * 70f;
         }
-        transform.Rotate(Vector3.up, steeringInput);
 
-        // Optional: Add delayed response
-        // Implement input lag based on drunkness
-        // You can queue inputs and process them after a delay proportional to drunkness
+        // Combine swerve and steering input
+        float targetRotation = transform.rotation.eulerAngles.y + steeringInput + currentSwerveAngle;
+
+        // Normalize angles to avoid wrap-around issues
+        targetRotation = NormalizeAngle(targetRotation);
+        float clampedRotation = Mathf.Clamp(targetRotation, minRotation, maxRotation);
+
+        // Apply the clamped rotation
+        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, clampedRotation, transform.rotation.eulerAngles.z);
+
+        // Forward movement
+        if (Input.GetKey(KeyCode.W))
+        {
+            transform.Translate(-Vector3.right * Time.deltaTime * carSpeed);
+        }
+    }
+
+    // Helper function to normalize angles to the range [0, 360)
+    private float NormalizeAngle(float angle)
+    {
+        while (angle < 0) angle += 360;
+        while (angle >= 360) angle -= 360;
+        return angle;
     }
 }
