@@ -53,7 +53,7 @@ public class StateManager : MonoBehaviour
         if (fogParticleSystem != null)
         {
             var emission = fogParticleSystem.emission; // Access emission module
-            emission.rateOverTimeMultiplier +=5;  // Multiply emission rate by 1.5
+            emission.rateOverTimeMultiplier +=1;  // Multiply emission rate by 1.5
         }
     }
 
